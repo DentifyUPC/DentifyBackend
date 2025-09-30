@@ -1,6 +1,7 @@
 package com.upc.dentify.iam.domain.model.aggregates;
 
 
+import com.upc.dentify.clinicmanagement.domain.model.aggregates.Clinic;
 import com.upc.dentify.iam.domain.model.commands.SignUpCommand;
 import com.upc.dentify.iam.domain.model.entities.IdentificationType;
 import com.upc.dentify.iam.domain.model.entities.Role;
