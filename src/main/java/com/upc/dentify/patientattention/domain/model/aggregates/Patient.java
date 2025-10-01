@@ -64,6 +64,12 @@ public class Patient extends AuditableAbstractAggregateRoot<Patient> {
         if (phoneNumber != null && !phoneNumber.isBlank()) this.phoneNumber = phoneNumber;
     }
 
+    public void updateBasicInfo(String firstName, String lastName, String email, String birthDate) {
+        this.personName = new PersonName(firstName, lastName);
+        this.email = new Email(email);
+        this.birthDate = new BirthDate(birthDate);
+    }
+
     public PersonName getPersonName() {
         return personName;
     }
