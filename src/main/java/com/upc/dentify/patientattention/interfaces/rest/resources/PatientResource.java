@@ -6,7 +6,7 @@ public record PatientResource(
         String lastName,
         String email,
         String birthDate,
-        Integer age,          // <- calculada
+        Integer age,
         String gender,
         String street,
         String district,

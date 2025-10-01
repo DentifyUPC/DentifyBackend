@@ -3,7 +3,6 @@ package com.upc.dentify.patientattention.domain.model.aggregates;
 import com.upc.dentify.patientattention.domain.model.valueobjects.*;
 import com.upc.dentify.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 
 @Entity
 public class Patient extends AuditableAbstractAggregateRoot<Patient> {
@@ -20,17 +19,16 @@ public class Patient extends AuditableAbstractAggregateRoot<Patient> {
     private Email email;
 
     @Enumerated(EnumType.STRING)
-    @Embedded
-    @Column
+    @Column(name = "gender")
     private Gender gender;
 
     @Embedded
     @Column
     private Address address;
 
-    @Size(min = 9)
-    @Column
-    private String phoneNumber;
+    @Embedded
+    @Column(name = "phone_number")
+    private PhoneNumber phoneNumber;
 
     @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
@@ -61,7 +59,7 @@ public class Patient extends AuditableAbstractAggregateRoot<Patient> {
     public void updateAdditionalInfo(Gender gender, Address address, String phoneNumber) {
         if (gender != null) this.gender = gender;
         if (address != null) this.address = address;
-        if (phoneNumber != null && !phoneNumber.isBlank()) this.phoneNumber = phoneNumber;
+        if (phoneNumber != null && !phoneNumber.isBlank()) this.phoneNumber = new PhoneNumber(phoneNumber);
     }
 
     public void updateBasicInfo(String firstName, String lastName, String email, String birthDate) {
@@ -91,7 +89,7 @@ public class Patient extends AuditableAbstractAggregateRoot<Patient> {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumber.phoneNumber();
     }
 
     public Long getUserId() {
