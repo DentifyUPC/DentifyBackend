@@ -1,0 +1,18 @@
+package com.upc.dentify.patientattention.interfaces.rest.resources;
+
+public record PatientResource(
+        Long id,
+        String firstName,
+        String lastName,
+        String email,
+        String birthDate,
+        Integer age,          // <- calculada
+        String gender,
+        String street,
+        String district,
+        String province,
+        String department,
+        String phoneNumber,
+        Long userId
+) {
+}

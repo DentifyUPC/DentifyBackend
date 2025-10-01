@@ -1,5 +1,6 @@
 package com.upc.dentify.iam.application.internal.commandservices;
 
+import com.upc.dentify.iam.domain.events.UserCreatedEvent;
 import com.upc.dentify.iam.domain.model.aggregates.User;
 import com.upc.dentify.iam.domain.model.commands.SignInCommand;
 import com.upc.dentify.iam.domain.model.commands.SignUpCommand;
@@ -11,6 +12,7 @@ import com.upc.dentify.iam.infrastructure.persistence.jpa.repositories.Identific
 import com.upc.dentify.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import com.upc.dentify.iam.interfaces.rest.resources.AuthResponseResource;
 import com.upc.dentify.iam.interfaces.rest.resources.RegisterResponseResource;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,15 +25,18 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final IdentificationTypeRepository identificationTypeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AuthCommandServiceImpl(JwtService jwtService,
                                   UserRepository userRepository,
                                   BCryptPasswordEncoder passwordEncoder,
-                                    IdentificationTypeRepository identificationTypeRepository) {
+                                    IdentificationTypeRepository identificationTypeRepository,
+                                  ApplicationEventPublisher eventPublisher) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.identificationTypeRepository = identificationTypeRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public AuthResponseResource login(SignInCommand command) {
@@ -70,6 +75,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         } catch (Exception e) {
             throw new IllegalArgumentException("A error occurred while saving user" + e.getMessage());
         }
+
+        System.out.println("Publicando UserCreatedEvent con roleId=" + command.roleId() + " y userId=" + user.getId());
+        eventPublisher.publishEvent(new UserCreatedEvent(
+                user.getId(),
+                command.roleId(),
+                user.getPersonName().firstName(),
+                user.getPersonName().lastName(),
+                user.getBirthDate().birthDate(),
+                user.getEmail().email(),
+                user.getClinic().getId()
+        ));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
