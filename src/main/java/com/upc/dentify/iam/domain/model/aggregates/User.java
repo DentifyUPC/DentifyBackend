@@ -123,4 +123,12 @@ public class User extends AuditableAbstractAggregateRoot<User> implements UserDe
     public boolean isEnabled() {
         return true;
     }
+
+    public BirthDate getBirthDate() {
+        return this.birthDate;
+    }
+
+    public Email getEmail() {
+        return this.email;
+    }
 }
