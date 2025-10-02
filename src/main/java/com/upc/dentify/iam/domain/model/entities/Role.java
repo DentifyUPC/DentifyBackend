@@ -28,4 +28,10 @@ public class Role extends AuditableModel implements GrantedAuthority{
         return this.name;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+
 }
