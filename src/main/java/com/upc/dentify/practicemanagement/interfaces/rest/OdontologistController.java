@@ -3,8 +3,11 @@ package com.upc.dentify.practicemanagement.interfaces.rest;
 import com.upc.dentify.practicemanagement.domain.model.queries.GetAllOdontologistByClinicId;
 import com.upc.dentify.practicemanagement.domain.model.queries.GetOdontologistById;
 import com.upc.dentify.practicemanagement.domain.model.queries.GetOdontologistByUserId;
+import com.upc.dentify.practicemanagement.domain.services.OdontologistCommandService;
 import com.upc.dentify.practicemanagement.domain.services.OdontologistQueryService;
 import com.upc.dentify.practicemanagement.interfaces.rest.resources.OdontologistResource;
+import com.upc.dentify.practicemanagement.interfaces.rest.resources.UpdateOdontologistRequestResource;
+import com.upc.dentify.practicemanagement.interfaces.rest.transform.OdontologistCommandFromResourceAssembler;
 import com.upc.dentify.practicemanagement.interfaces.rest.transform.OdontologistResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -19,21 +22,23 @@ import java.util.List;
 @RequestMapping(value ="/api/v1/odontologists", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OdontologistController {
     private final OdontologistQueryService odontologistQueryService;
+    private final OdontologistCommandService odontologistCommandService;
 
-    public OdontologistController(OdontologistQueryService odontologistQueryService) {
+    public OdontologistController(OdontologistQueryService odontologistQueryService, OdontologistCommandService odontologistCommandService) {
         this.odontologistQueryService = odontologistQueryService;
+        this.odontologistCommandService = odontologistCommandService;
     }
 
-    //@PreAuthorize("hasAuthority('PATIENT')")
-    //@PutMapping("/{patientId}")
-    //public ResponseEntity<PatientResource> updatePatient(@PathVariable("patientId") Long patientId, @RequestBody UpdatePatientRequestResource requestResource) {
-    //    var command = PatientCommandFromResourceAssembler.toCommand(patientId, requestResource);
-    //    var result = patientCommandService.handle(command);
-    //
-    //    return result.map(patient -> ResponseEntity.ok(
-    //            PatientResourceFromEntityAssembler.fromEntityToResource(patient)
-    //    )).orElseGet(() -> ResponseEntity.notFound().build());
-    //}
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/{odontologistId}")
+    public ResponseEntity<OdontologistResource> updatePatient(@PathVariable("odontologistId") Long odontologistId, @RequestBody UpdateOdontologistRequestResource requestResource) {
+        var command = OdontologistCommandFromResourceAssembler.toCommand(odontologistId, requestResource);
+        var result = odontologistCommandService.handle(command);
+
+        return result.map(odontologist -> ResponseEntity.ok(
+                OdontologistResourceFromEntityAssembler.toResource(odontologist)
+        )).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/clinics/{clinicId}/odontologists")

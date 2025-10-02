@@ -78,4 +78,41 @@ public class Odontologist extends AuditableAbstractAggregateRoot<Odontologist> {
         this.email = new Email(email);
         this.birthDate = new BirthDate(birthDate);
     }
+
+    public void updateAdditionalInformation(
+            Gender gender,
+            Address address,
+            String phoneNumber,
+            String professionalLicenseNumber,
+            String specialtyRegistrationNumber,
+            String specialty,
+            Long serviceId,
+            boolean isActive
+    ) {
+        if (gender != null) this.gender = gender;
+
+        if (address != null) this.address = address;
+
+        this.phoneNumber = (phoneNumber != null && !phoneNumber.isBlank())
+                ? new PhoneNumber(phoneNumber)
+                : this.phoneNumber;
+
+        if (professionalLicenseNumber != null && !professionalLicenseNumber.isBlank()) {
+            this.professionalLicenseNumber = professionalLicenseNumber;
+        }
+
+        if (specialtyRegistrationNumber != null && !specialtyRegistrationNumber.isBlank()) {
+            this.specialtyRegistrationNumber = specialtyRegistrationNumber;
+        }
+
+        if (specialty != null && !specialty.isBlank()) {
+            this.specialty = specialty;
+        }
+
+        if (serviceId != null) {
+            this.serviceId = serviceId;
+        }
+
+        this.isActive = isActive;
+    }
 }
