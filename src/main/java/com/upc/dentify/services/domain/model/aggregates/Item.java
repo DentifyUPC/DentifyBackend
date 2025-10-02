@@ -27,6 +27,10 @@ public class Item extends AuditableAbstractAggregateRoot<Item> {
         this.unitType = unitType;
     }
 
+    public Item(Long id) {
+        this.setId(id);
+    }
+
     public String getName() {
         return name;
     }

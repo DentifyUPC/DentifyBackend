@@ -1,0 +1,58 @@
+package com.upc.dentify.clinicmanagement.application.internal.commandservices;
+
+import com.upc.dentify.clinicmanagement.application.internal.outboundservices.acl.ExternalItemService;
+import com.upc.dentify.clinicmanagement.application.internal.outboundservices.acl.ExternalProfileService;
+import com.upc.dentify.clinicmanagement.domain.model.aggregates.ItemPerClinic;
+import com.upc.dentify.clinicmanagement.domain.model.commands.CreateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.services.ItemPerClinicCommandService;
+import com.upc.dentify.clinicmanagement.infrastructure.persistence.jpa.repositories.ItemPerClinicRepository;
+import com.upc.dentify.iam.infrastructure.security.AuthenticatedUserProvider;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class ItemPerClinicCommandServiceImpl implements ItemPerClinicCommandService {
+
+    private final ItemPerClinicRepository itemPerClinicRepository;
+    private final AuthenticatedUserProvider authenticatedUserProvider;
+    private final ExternalItemService externalItemService;
+    private final ExternalProfileService externalProfileService;
+
+    public ItemPerClinicCommandServiceImpl(ItemPerClinicRepository itemPerClinicRepository,
+                                           AuthenticatedUserProvider authenticatedUserProvider,
+                                           ExternalItemService externalItemService,
+                                           ExternalProfileService externalProfileService) {
+        this.itemPerClinicRepository = itemPerClinicRepository;
+        this.authenticatedUserProvider = authenticatedUserProvider;
+        this.externalItemService = externalItemService;
+        this.externalProfileService = externalProfileService;
+    }
+
+    @Override
+    public Optional<ItemPerClinic> handle(CreateItemPerClinicCommand command) {
+        Long userId = authenticatedUserProvider.getCurrentUserId();
+
+        //comprobar si existe item en el catalogo
+        if(!externalItemService.existsById(command.itemId())) {
+            throw new IllegalArgumentException("This item does not exist in the catalog");
+        }
+
+        //obtener la clinica a la que pertenece el usuario
+        Long clinicId = externalProfileService.fetchClinicIdByUserId(userId);
+
+        if(itemPerClinicRepository.existByClinicIdAndItemId(clinicId, command.itemId())) {
+            throw new IllegalArgumentException("This item already exists in the clinic");
+        }
+
+        var newItemPerClinic = new ItemPerClinic(command);
+
+        try {
+            itemPerClinicRepository.save(newItemPerClinic);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error saving item per clinic", e);
+        }
+
+        return Optional.of(newItemPerClinic);
+    }
+}
