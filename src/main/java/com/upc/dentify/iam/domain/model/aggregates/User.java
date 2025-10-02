@@ -91,6 +91,7 @@ public class User extends AuditableAbstractAggregateRoot<User> implements UserDe
     //user details methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        System.out.println("Authorities for user " + getUsername() + ": " + List.of(role));
         return List.of(role); //return user roles
     }
 
