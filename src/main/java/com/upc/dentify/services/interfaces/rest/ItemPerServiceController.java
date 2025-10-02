@@ -1,6 +1,6 @@
 package com.upc.dentify.services.interfaces.rest;
 
-import com.upc.dentify.services.domain.model.queries.GetAllItemsRequiredByServiceQuery;
+import com.upc.dentify.services.domain.model.queries.GetAllItemsRequiredByServiceIdQuery;
 import com.upc.dentify.services.domain.services.ItemPerServiceQueryService;
 import com.upc.dentify.services.interfaces.rest.dtos.ItemRequiredResource;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,7 @@ public class ItemPerServiceController {
             @ApiResponse(responseCode = "404", description = "Items not found")
     })
     public ResponseEntity<List<ItemRequiredResource>> getAllItemsPerServiceId(@PathVariable Long serviceId) {
-        var items = itemPerServiceQueryService.handle(new GetAllItemsRequiredByServiceQuery(serviceId));
+        var items = itemPerServiceQueryService.handle(new GetAllItemsRequiredByServiceIdQuery(serviceId));
 
         if (items.isEmpty()) {
             return ResponseEntity.notFound().build();

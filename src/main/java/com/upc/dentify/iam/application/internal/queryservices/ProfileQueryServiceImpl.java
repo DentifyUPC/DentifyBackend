@@ -1,6 +1,7 @@
 package com.upc.dentify.iam.application.internal.queryservices;
 
 import com.upc.dentify.iam.domain.model.aggregates.User;
+import com.upc.dentify.iam.domain.model.queries.GetClinicIdByUserIdQuery;
 import com.upc.dentify.iam.domain.model.queries.GetUserInformationQuery;
 import com.upc.dentify.iam.domain.services.ProfileQueryService;
 import com.upc.dentify.iam.infrastructure.persistence.jpa.repositories.UserRepository;
@@ -30,5 +31,11 @@ public class ProfileQueryServiceImpl implements ProfileQueryService {
                 user.getId(), fullName, user.getUsername(), user.getRole().getId(), user.getClinic().getId()
         );
 
+    }
+
+    @Override
+    public Long handle(GetClinicIdByUserIdQuery query) {
+        Long clinicId = userRepository.findClinicIdById(query.userId());
+        return clinicId != null ? clinicId : null;
     }
 }
