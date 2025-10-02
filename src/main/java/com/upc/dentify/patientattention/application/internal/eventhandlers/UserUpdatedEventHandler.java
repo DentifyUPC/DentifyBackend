@@ -5,7 +5,7 @@ import com.upc.dentify.patientattention.infrastructure.persistence.jpa.repositor
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("patientUserUpdatedEventHandler")
 public class UserUpdatedEventHandler {
     private final PatientRepository patientRepository;
 
