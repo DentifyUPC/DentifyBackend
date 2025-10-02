@@ -41,7 +41,7 @@ public class ItemPerClinicCommandServiceImpl implements ItemPerClinicCommandServ
         //obtener la clinica a la que pertenece el usuario
         Long clinicId = externalProfileService.fetchClinicIdByUserId(userId);
 
-        if(itemPerClinicRepository.existByClinicIdAndItemId(clinicId, command.itemId())) {
+        if(itemPerClinicRepository.existsByClinicIdAndItemId(clinicId, command.itemId())) {
             throw new IllegalArgumentException("This item already exists in the clinic");
         }
 

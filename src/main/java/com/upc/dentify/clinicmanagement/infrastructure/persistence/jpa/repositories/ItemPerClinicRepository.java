@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ItemPerClinicRepository extends JpaRepository<ItemPerClinic, Long> {
-    Boolean existByClinicIdAndItemId(Long clinicId, Long itemId);
+    Boolean existsByClinicIdAndItemId(Long clinicId, Long itemId);
 }
