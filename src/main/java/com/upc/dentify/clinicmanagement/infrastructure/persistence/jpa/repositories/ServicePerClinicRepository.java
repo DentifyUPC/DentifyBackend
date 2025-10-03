@@ -4,4 +4,5 @@ import com.upc.dentify.clinicmanagement.domain.model.aggregates.ServicesPerClini
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ServicePerClinicRepository extends JpaRepository<ServicesPerClinics, Long> {
+    boolean existsByClinicIdAndServiceId(Long clinicId, Long serviceId);
 }
