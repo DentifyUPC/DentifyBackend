@@ -1,6 +1,7 @@
 package com.upc.dentify.clinicmanagement.domain.model.aggregates;
 
 import com.upc.dentify.clinicmanagement.domain.model.commands.CreateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateItemPerClinicCommand;
 import com.upc.dentify.services.domain.model.aggregates.Item;
 import com.upc.dentify.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
@@ -57,5 +58,11 @@ public class ItemPerClinic extends AuditableAbstractAggregateRoot<ItemPerClinic>
 
     public Clinic getClinic() {
         return clinic;
+    }
+
+    public void update(UpdateItemPerClinicCommand command) {
+        this.availableStock = command.availableStock();
+        this.minimumStock = command.minimumStock();
+        this.price = command.price();
     }
 }

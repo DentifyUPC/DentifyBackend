@@ -1,10 +1,16 @@
 package com.upc.dentify.clinicmanagement.interfaces;
 
 import com.upc.dentify.clinicmanagement.domain.model.commands.CreateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.queries.GetAllItemsPerClinicIdQuery;
 import com.upc.dentify.clinicmanagement.domain.services.ItemPerClinicCommandService;
+import com.upc.dentify.clinicmanagement.domain.services.ItemPerClinicQueryService;
 import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.CreateItemPerClinicCommandFromResourceAssembler;
 import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.ItemPerClinicResourceFromEntityAssembler;
+import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.UpdateItemPerClinicCommandFromResourceAssembler;
 import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.CreateItemPerClinicResource;
+import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.ItemPerClinicResource;
+import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.UpdateItemPerClinicResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,10 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,9 +30,12 @@ import java.util.Map;
 public class ItemPerClinicController {
 
     private final ItemPerClinicCommandService itemPerClinicCommandService;
+    private final ItemPerClinicQueryService itemPerClinicQueryService;
 
-    public ItemPerClinicController(ItemPerClinicCommandService itemPerClinicCommandService) {
+    public ItemPerClinicController(ItemPerClinicCommandService itemPerClinicCommandService,
+                                   ItemPerClinicQueryService itemPerClinicQueryService) {
         this.itemPerClinicCommandService = itemPerClinicCommandService;
+        this.itemPerClinicQueryService = itemPerClinicQueryService;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -68,4 +76,47 @@ public class ItemPerClinicController {
     }
 
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update item per clinic", description = "Update item per clinic using the ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated item per clinic"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
+    })
+    public ResponseEntity<ItemPerClinicResource> updatePatient(@PathVariable Long id,
+                                                               @RequestBody UpdateItemPerClinicResource resource) {
+
+        UpdateItemPerClinicCommand command = UpdateItemPerClinicCommandFromResourceAssembler.toCommandFromResource(resource, id);
+        var item = itemPerClinicCommandService.handle(command);
+
+        if(item.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        var itemResource = ItemPerClinicResourceFromEntityAssembler.toResourceFromEntity(item.get());
+
+        return ResponseEntity.ok(itemResource);
+    }
+
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/{clinicId}")
+    @Operation(summary = "Get all items by clinic ID", description = "Get all items by clinic ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Items found"),
+            @ApiResponse(responseCode = "404", description = "Items not found")
+    })
+    public ResponseEntity<List<ItemPerClinicResource>> getAllItemsPerClinic(@PathVariable Long clinicId) {
+        var items = itemPerClinicQueryService.handle(new GetAllItemsPerClinicIdQuery(clinicId));
+
+        if (items.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var resources = items.stream()
+                .map(ItemPerClinicResourceFromEntityAssembler:: toResourceFromEntity)
+                .toList();
+
+        return ResponseEntity.ok(resources);
+    }
 }
