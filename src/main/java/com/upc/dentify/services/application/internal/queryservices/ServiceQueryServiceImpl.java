@@ -23,4 +23,9 @@ public class ServiceQueryServiceImpl implements ServiceQueryService {
     public List<com.upc.dentify.services.domain.model.aggregates.Service> handle(GetAllServicesQuery query) {
         return serviceRepository.findAll();
     }
+
+    @Override
+    public boolean existsById(Long serviceId) {
+        return serviceRepository.existsById(serviceId);
+    }
 }
