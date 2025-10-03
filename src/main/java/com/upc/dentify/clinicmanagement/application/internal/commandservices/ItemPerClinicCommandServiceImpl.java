@@ -4,6 +4,7 @@ import com.upc.dentify.clinicmanagement.application.internal.outboundservices.ac
 import com.upc.dentify.clinicmanagement.application.internal.outboundservices.acl.ExternalProfileService;
 import com.upc.dentify.clinicmanagement.domain.model.aggregates.ItemPerClinic;
 import com.upc.dentify.clinicmanagement.domain.model.commands.CreateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateItemPerClinicCommand;
 import com.upc.dentify.clinicmanagement.domain.services.ItemPerClinicCommandService;
 import com.upc.dentify.clinicmanagement.infrastructure.persistence.jpa.repositories.ItemPerClinicRepository;
 import com.upc.dentify.iam.infrastructure.security.AuthenticatedUserProvider;
@@ -39,9 +40,9 @@ public class ItemPerClinicCommandServiceImpl implements ItemPerClinicCommandServ
         }
 
         //obtener la clinica a la que pertenece el usuario
-        Long clinicId = externalProfileService.fetchClinicIdByUserId(userId);
+//        Long clinicId = externalProfileService.fetchClinicIdByUserId(userId);
 
-        if(itemPerClinicRepository.existsByClinicIdAndItemId(clinicId, command.itemId())) {
+        if(itemPerClinicRepository.existsByClinicIdAndItemId(command.clinicId(), command.itemId())) {
             throw new IllegalArgumentException("This item already exists in the clinic");
         }
 
@@ -54,5 +55,20 @@ public class ItemPerClinicCommandServiceImpl implements ItemPerClinicCommandServ
         }
 
         return Optional.of(newItemPerClinic);
+    }
+
+    @Override
+    public Optional<ItemPerClinic> handle(UpdateItemPerClinicCommand command) {
+        Long userId = authenticatedUserProvider.getCurrentUserId();
+
+        var itemPerClinic = itemPerClinicRepository.findById(command.id());
+        itemPerClinic.get().update(command);
+
+        try {
+            var updatedItemPerClinic = itemPerClinicRepository.save(itemPerClinic.get());
+            return Optional.of(updatedItemPerClinic);
+        } catch(RuntimeException e) {
+            throw new IllegalArgumentException("An error occurred while updating item per clinic" + e.getMessage());
+        }
     }
 }
