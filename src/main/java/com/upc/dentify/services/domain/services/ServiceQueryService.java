@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ServiceQueryService {
     List<Service> handle(GetAllServicesQuery query);
+    boolean existsById(Long serviceId);
 }
