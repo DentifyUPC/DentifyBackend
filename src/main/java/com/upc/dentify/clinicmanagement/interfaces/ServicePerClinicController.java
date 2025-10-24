@@ -1,9 +1,10 @@
 package com.upc.dentify.clinicmanagement.interfaces;
 
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateItemPerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateServicePerClinicCommand;
 import com.upc.dentify.clinicmanagement.domain.services.ServicePerClinicCommandService;
-import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.CreateServicePerClinicCommandFromResourceAssembler;
-import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.ServicePerClinicResourceFromEntityAssembler;
-import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.CreateServicePerClinicResource;
+import com.upc.dentify.clinicmanagement.interfaces.rest.assemblers.*;
+import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -55,5 +53,27 @@ public class ServicePerClinicController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Unexpected error: " + e.getMessage()));
         }
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update service per clinic", description = "Update a service per clinic")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated service per clinic"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
+    })
+    public ResponseEntity<ServicePerClinicResource> updatePatient(@PathVariable Long id,
+                                                                  @RequestBody UpdateServicePerClinicResource resource) {
+
+        UpdateServicePerClinicCommand command = UpdateServicePerClinicCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var service = servicePerClinicCommandService.handle(command);
+
+        if(service.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        var serviceResource = ServicePerClinicResourceFromEntityAssembler.toResourceFromEntity(service.get());
+
+        return ResponseEntity.ok(serviceResource);
     }
 }

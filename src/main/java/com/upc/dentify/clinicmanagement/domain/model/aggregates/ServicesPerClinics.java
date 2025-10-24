@@ -4,6 +4,7 @@ import com.upc.dentify.shared.domain.model.aggregates.AuditableAbstractAggregate
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -37,5 +38,10 @@ public class ServicesPerClinics extends AuditableAbstractAggregateRoot<ServicesP
     public void calculateTotals(Double totalPricePerItems) {
         this.totalPricePerItems = totalPricePerItems;
         this.totalServicePrice = this.totalPricePerItems + this.totalLaborPrice;
+    }
+
+    public void updateTotals(Double totalLaborPrice) {
+        this.totalLaborPrice = totalLaborPrice;
+        this.totalServicePrice = this.totalLaborPrice + this.totalPricePerItems;
     }
 }

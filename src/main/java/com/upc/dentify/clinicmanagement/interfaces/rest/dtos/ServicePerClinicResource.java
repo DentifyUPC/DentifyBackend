@@ -1,6 +1,6 @@
 package com.upc.dentify.clinicmanagement.interfaces.rest.dtos;
 
-public record ServicePerClientResource(
+public record ServicePerClinicResource(
         Long id,
         Long clinicId,
         Long serviceId,

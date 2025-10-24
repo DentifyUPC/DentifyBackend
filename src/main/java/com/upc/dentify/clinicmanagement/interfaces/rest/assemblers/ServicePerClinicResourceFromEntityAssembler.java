@@ -1,11 +1,11 @@
 package com.upc.dentify.clinicmanagement.interfaces.rest.assemblers;
 
 import com.upc.dentify.clinicmanagement.domain.model.aggregates.ServicesPerClinics;
-import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.ServicePerClientResource;
+import com.upc.dentify.clinicmanagement.interfaces.rest.dtos.ServicePerClinicResource;
 
 public class ServicePerClinicResourceFromEntityAssembler {
-    public static ServicePerClientResource toResourceFromEntity(ServicesPerClinics entity) {
-        return new ServicePerClientResource(
+    public static ServicePerClinicResource toResourceFromEntity(ServicesPerClinics entity) {
+        return new ServicePerClinicResource(
                 entity.getId(),
                 entity.getClinicId(),
                 entity.getServiceId(),

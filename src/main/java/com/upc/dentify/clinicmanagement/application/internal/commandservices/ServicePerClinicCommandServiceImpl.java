@@ -4,6 +4,7 @@ import com.upc.dentify.clinicmanagement.application.internal.outboundservices.ac
 import com.upc.dentify.clinicmanagement.domain.model.aggregates.ItemPerClinic;
 import com.upc.dentify.clinicmanagement.domain.model.aggregates.ServicesPerClinics;
 import com.upc.dentify.clinicmanagement.domain.model.commands.CreateServicePerClinicCommand;
+import com.upc.dentify.clinicmanagement.domain.model.commands.UpdateServicePerClinicCommand;
 import com.upc.dentify.clinicmanagement.domain.services.ServicePerClinicCommandService;
 import com.upc.dentify.clinicmanagement.infrastructure.persistence.jpa.repositories.ItemPerClinicRepository;
 import com.upc.dentify.clinicmanagement.infrastructure.persistence.jpa.repositories.ServicePerClinicRepository;
@@ -58,5 +59,18 @@ public class ServicePerClinicCommandServiceImpl implements ServicePerClinicComma
         var saved = servicePerClinicRepository.save(servicesPerClinics);
 
         return Optional.of(saved);
+    }
+
+    @Override
+    public Optional<ServicesPerClinics> handle(UpdateServicePerClinicCommand command) {
+        var servicePerClinic = servicePerClinicRepository.findById(command.id());
+        servicePerClinic.get().updateTotals(command.totalLaborPrice());
+
+        try {
+            var updatedServicePerClinic = servicePerClinicRepository.save(servicePerClinic.get());
+            return Optional.of(updatedServicePerClinic);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("An error occurred while updating service per clinic", e);
+        }
     }
 }
