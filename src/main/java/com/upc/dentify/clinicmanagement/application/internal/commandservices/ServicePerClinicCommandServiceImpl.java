@@ -27,6 +27,9 @@ public class ServicePerClinicCommandServiceImpl implements ServicePerClinicComma
 
     @Override
     public Optional<ServicesPerClinics> handle(CreateServicePerClinicCommand command) {
+        if (servicePerClinicRepository.existsByClinicIdAndServiceId(command.clinicId(), command.serviceId())) {
+            throw new IllegalArgumentException("Clinic with id " + command.clinicId() + " and service with id " + command.serviceId() + " already exists");
+        }
         var requiredItems = externalItemPerServiceService.getItemsIdsByServiceId(command.serviceId());
         var clinicItems = itemPerClinicRepository.findAllByClinicId(command.clinicId());
 
