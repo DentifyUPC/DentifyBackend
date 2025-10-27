@@ -62,7 +62,7 @@ public class ServicePerClinicController {
             @ApiResponse(responseCode = "200", description = "Updated service per clinic"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<ServicePerClinicResource> updatePatient(@PathVariable Long id,
+    public ResponseEntity<ServicePerClinicResource> updateServicePerClinic(@PathVariable Long id,
                                                                   @RequestBody UpdateServicePerClinicResource resource) {
 
         UpdateServicePerClinicCommand command = UpdateServicePerClinicCommandFromResourceAssembler.toCommandFromResource(id, resource);

@@ -17,7 +17,7 @@ public class PatientResourceFromEntityAssembler {
                 patient.getAddress() != null ? patient.getAddress().district() : null,
                 patient.getAddress() != null ? patient.getAddress().province() : null,
                 patient.getAddress() != null ? patient.getAddress().department() : null,
-                patient.getPhoneNumber() != null ? patient.getPhoneNumber() : null,
+                patient.getPhoneNumber() != null ? patient.getPhoneNumber().phoneNumber() : null,
                 patient.getUserId()
         );
     }

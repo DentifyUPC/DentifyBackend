@@ -88,8 +88,8 @@ public class Patient extends AuditableAbstractAggregateRoot<Patient> {
         return address;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber.phoneNumber();
+    public PhoneNumber getPhoneNumber() {
+        return phoneNumber;
     }
 
     public Long getUserId() {
